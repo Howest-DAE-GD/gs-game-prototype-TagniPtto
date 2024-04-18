@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Game.h"
+#include "iostream"
 
 Game::Game( const Window& window ) 
 	:BaseGame{ window }
@@ -33,6 +34,7 @@ void Game::Update( float elapsedSec )
 	//{
 	//	std::cout << "Left and up arrow keys are down\n";
 	//}
+	std::cout << "Gayminng" << std::endl;
 }
 
 void Game::Draw( ) const
