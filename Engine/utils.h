@@ -77,9 +77,17 @@ namespace utils
 	bool Raycast( const std::vector<Point2f>& vertices, const Point2f& rayP1, const Point2f& rayP2, HitInfo& hitInfo );
 
 	bool IntersectLineSegments(const Point2f& p1, const Point2f& p2, const Point2f& q1, const Point2f& q2, float& outLambda1, float& outLambda2, float epsilon = 1e-6);
+
 	float DistPointLineSegment(const Point2f& p, const Point2f& a, const Point2f& b);
 	bool IsPointOnLineSegment(const Point2f& p, const Point2f& a, const Point2f& b);
 	bool IntersectRectLine(const Rectf& r, const Point2f& p1, const Point2f& p2, float& intersectMin, float& intersectMax);
+
+
+	//m_customFunctions
+	bool IntersectPolygons(const std::vector<Point2f>& pl1, const std::vector<Point2f>& pl2, std::vector<Point2f>& intersection);
+	bool IntersectLineSegments_(const Point2f& p1, const Point2f& p2, const Point2f& q1, const Point2f& q2, float& outLambda1, float& outLambda2, float epsilon = 1e-6);
+	Rectf GetBoundingRectangle(const std::vector<Point2f>& vertices);
+	Point2f AverageBetweenPoints(const std::vector<Point2f>& vertices);
 
 #pragma endregion CollisionFunctionality
 

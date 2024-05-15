@@ -530,6 +530,53 @@ bool utils::IntersectLineSegments( const Point2f& p1, const Point2f& p2, const P
 	return intersecting;
 }
 
+bool utils::IntersectLineSegments_(const Point2f& p1, const Point2f& p2, const Point2f& q1, const Point2f& q2, float& outLambda1, float& outLambda2, float epsilon)
+{
+	float a0{(q1.x-p1.x) * (p2.y - p1.y) - (q1.y - p1.y) * (p2.x - p1.x) };
+	float a1{-((q2.x-q1.x) * (p2.y- p1.y) - (q2.y-q1.y) * (p2.x-p1.x))};
+
+
+	if (std::abs(a1) < epsilon) {
+		//parralell
+		return false;
+	}
+	else {
+		float s{a0/a1};
+		float t{((q1.x-p1.x)+(q2.x-q1.x)*s)/ (p2.x - p1.x)};
+
+		if ((1.f >= s >= 0.f)&&(1.f >= t >= 0.f)) {
+			outLambda1 = t;
+			outLambda2 = s;
+
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+}
+
+bool utils::IntersectPolygons(const std::vector<Point2f>& pl1, const std::vector<Point2f>& pl2, std::vector<Point2f>& intersection)
+{
+	bool intersecting{ false };
+	intersection.clear();
+	for (int i{}; i < pl1.size(); ++i) {
+		const Point2f& p1{pl1[(i + 0)% pl1.size()]};
+		const Point2f& p2{pl1[(i + 1)% pl1.size()]};
+		for (int j{}; j < pl2.size(); ++j) {
+			const Point2f& q1{ pl2[(j + 0) % pl2.size()] };
+			const Point2f& q2{ pl2[(j + 1) % pl2.size()] };
+
+			float lam1, lam2;
+			if (utils::IntersectLineSegments_(p1,p2,q1,q2,lam1,lam2)) {
+				intersecting = true;
+				intersection.push_back((Vector2f(p1) + Vector2f(p2,p1)*lam1).ToPoint2f());
+			}
+		}
+	}
+	return intersecting;
+}
+
 bool utils::Raycast( const std::vector<Point2f>& vertices, const Point2f& rayP1, const Point2f& rayP2, HitInfo& hitInfo )
 {
 	return Raycast( vertices.data( ), vertices.size( ), rayP1, rayP2, hitInfo );
@@ -681,6 +728,44 @@ bool utils::IntersectRectLine(const Rectf& r, const Point2f& p1, const Point2f& 
 	intersectMin = tMin;
 	intersectMax = tMax;
 	return true;
+}
+
+
+Rectf utils::GetBoundingRectangle(const std::vector<Point2f>& vertices)
+{
+	if (vertices.size() < 1) {
+		return Rectf();
+	}
+	if (vertices.size() < 2) {
+		return Rectf(vertices[0].x, vertices[0].y,0,0);
+	}
+	float smallestX{ vertices[0].x }, biggestX{ vertices[0].x };
+	float smallestY{ vertices[0].y }, biggestY{ vertices[0].y };
+
+	for (const Point2f& p: vertices) {
+		if (p.x > biggestX) {
+			biggestX = p.x;
+		}
+		if (p.y > biggestY) {
+			biggestY = p.y;
+		}
+		if (p.x < smallestX) {
+			smallestX = p.x;
+		}
+		if (p.y < smallestY) {
+			smallestY = p.y;
+		}
+	}
+	return Rectf{ smallestX ,smallestY, biggestX - smallestX, biggestY - smallestY };
+}
+
+Point2f utils::AverageBetweenPoints(const std::vector<Point2f>& vertices)
+{
+	Vector2f result{};
+	for (const Point2f& p : vertices) {
+		result += Vector2f(p);
+	}
+	return (result / vertices.size()).ToPoint2f();
 }
 
 #pragma endregion CollisionFunctionality
