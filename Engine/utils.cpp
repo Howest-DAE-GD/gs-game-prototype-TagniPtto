@@ -544,7 +544,7 @@ bool utils::IntersectLineSegments_(const Point2f& p1, const Point2f& p2, const P
 		float s{a0/a1};
 		float t{((q1.x-p1.x)+(q2.x-q1.x)*s)/ (p2.x - p1.x)};
 
-		if ((1.f >= s >= 0.f)&&(1.f >= t >= 0.f)) {
+		if (((1.f >= s)and (s >= 0.f)) && (1.f >= t) and (t >= 0.f)) {
 			outLambda1 = t;
 			outLambda2 = s;
 
@@ -558,7 +558,6 @@ bool utils::IntersectLineSegments_(const Point2f& p1, const Point2f& p2, const P
 
 bool utils::IntersectPolygons(const std::vector<Point2f>& pl1, const std::vector<Point2f>& pl2, std::vector<Point2f>& intersection)
 {
-	bool intersecting{ false };
 	intersection.clear();
 	for (int i{}; i < pl1.size(); ++i) {
 		const Point2f& p1{pl1[(i + 0)% pl1.size()]};
@@ -569,12 +568,14 @@ bool utils::IntersectPolygons(const std::vector<Point2f>& pl1, const std::vector
 
 			float lam1, lam2;
 			if (utils::IntersectLineSegments_(p1,p2,q1,q2,lam1,lam2)) {
-				intersecting = true;
 				intersection.push_back((Vector2f(p1) + Vector2f(p2,p1)*lam1).ToPoint2f());
 			}
 		}
 	}
-	return intersecting;
+	if (intersection.size()>0) {
+		return true;
+	}
+	return false;
 }
 
 bool utils::Raycast( const std::vector<Point2f>& vertices, const Point2f& rayP1, const Point2f& rayP2, HitInfo& hitInfo )

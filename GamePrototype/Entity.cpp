@@ -8,7 +8,7 @@ Entity::Entity():
 }
 
 Entity::Entity(Vector2f position, Vector2f velocity):
-	m_position(position),m_velocity(velocity)
+	m_position(position),m_velocity(velocity),beingSus(false)
 {
 
 }
@@ -16,7 +16,13 @@ Entity::Entity(Vector2f position, Vector2f velocity):
 void Entity::Update(float elapsedSec)
 {
 	m_position += m_velocity*elapsedSec; 
-	
+	if (beingSus) {
+		counter += elapsedSec;
+		if (counter > 2.f) {
+			beingSus = false;
+			counter = 0.f;
+		}
+	}
 }
 
 void Entity::Draw() const

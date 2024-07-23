@@ -147,25 +147,15 @@ xcopy "$(SolutionDir)Resources\*.*" "$(TargetDir)" /y /d /s</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Character.cpp" />
-    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="TerrainGrid.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Character.h" />
-    <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Level.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Player.h" />
+    <ClInclude Include="TerrainGrid.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

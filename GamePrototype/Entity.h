@@ -13,13 +13,17 @@ public:
 	Point2f GetPosition() const;
 	bool IsSus()const;
 
-
-protected:
 	Vector2f m_velocity;
 	Vector2f m_position;
+	float m_Health{20.f};
+
+	bool isDead{ false };
+	bool isPossesed{ false };
+	bool beingSus;
+protected:
+	float counter{0};
 	float m_torque;
 	float hitBoxRadius;
 	
-	bool beingSus;
 };
 
