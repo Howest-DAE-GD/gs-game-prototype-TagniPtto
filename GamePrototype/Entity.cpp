@@ -1,42 +1,112 @@
 #include "pch.h"
 #include "Entity.h"
+#include <iostream>
 
-Entity::Entity():
-	Entity(Vector2f(0.f,0.f), Vector2f(0.f, 0.f))
+#include "Texture.h"
+
+
+
+Entity::Entity(Vector2f position, Vector2f velocity,float angle, Texture* texture) :
+	m_Position(position), m_Velocity(velocity) , m_pTexture(texture), m_angle(angle)
 {
-
-}
-
-Entity::Entity(Vector2f position, Vector2f velocity):
-	m_position(position),m_velocity(velocity),beingSus(false)
-{
-
-}
-
-void Entity::Update(float elapsedSec)
-{
-	m_position += m_velocity*elapsedSec; 
-	if (beingSus) {
-		counter += elapsedSec;
-		if (counter > 2.f) {
-			beingSus = false;
-			counter = 0.f;
-		}
-	}
+	
 }
 
 void Entity::Draw() const
 {
-	const float radius{10.f};
-	utils::FillEllipse(m_position.ToPoint2f(), radius, radius);
+	glPushMatrix(); {
+
+		glTranslatef(m_Position.x, m_Position.y, 0.f);
+		glRotatef(m_angle, 0.f, 0.f, 1.f);
+
+
+
+		if (m_pTexture != nullptr) {
+			float width{ m_pTexture->GetWidth() * m_textureDispaySize };
+			float height{ m_pTexture->GetHeight() * m_textureDispaySize };
+			Rectf dst{ -width / 2.f , -height / 2.f ,width,height };
+			m_pTexture->Draw(dst);
+		}
+		else {
+			utils::DrawEllipse(Ellipsef{ {},m_hitboxRadius,m_hitboxRadius });
+		}
+
+	}glPopMatrix();
+
+
+	
 }
 
-Point2f Entity::GetPosition() const
+void Entity::Update(float elapsedSec)
 {
-	return m_position.ToPoint2f();
+	if (!m_isActive)return;
+	m_Position += m_Velocity * elapsedSec;
+	m_angle += m_angularVelocity * elapsedSec;
 }
 
-bool Entity::IsSus() const
+void Entity::Print() const
 {
-	return beingSus;
+	std::cout << "Entity : " << std::endl;
+	std::cout << "Position"<<" [ "<<m_Position << " ] " << std::endl;
+	std::cout << "Velocity"<<" [ "<<m_Velocity << " ] " << std::endl;
+	std::cout << "hitboxRadius"<<" [ "<<m_hitboxRadius << " ] " << std::endl;
 }
+
+Vector2f Entity::GetPosition() const
+{
+	return m_Position;
+}
+
+void Entity::SetPosition(Vector2f position)
+{
+	m_Position = position;
+}
+
+
+Vector2f Entity::GetVelocity()
+{
+	return m_Velocity;
+}
+
+void Entity::SetVelocity(const Vector2f& velocity)
+{
+	m_Velocity = velocity;
+}
+
+float Entity::GetAngularVelocity() const
+{
+	return m_angularVelocity;
+}
+
+void Entity::SetAngularVelocity(float angVel)
+{
+	m_angularVelocity = angVel;
+}
+
+
+void Entity::Attack(Entity& target, int damage)
+{
+	target.m_Health -= 2;
+}
+
+void Entity::KnockBack(Entity& target, float force)
+{
+	target.m_Velocity += Vector2f{m_Position.ToPoint2f(),target.m_Position.ToPoint2f() }.Normalized() * force;
+}
+
+int Entity::GetHealth()
+{
+	return m_Health;
+}
+
+void Entity::SetHealth(int health)
+{
+	m_Health = health;
+}
+
+float Entity::GetHitboxRadius()
+{
+	return m_hitboxRadius;
+}
+
+

@@ -1,7 +1,14 @@
 #pragma once
 #include "BaseGame.h"
 
+#include <list>
 
+class AnimationManager;
+class Player;
+class Texture;
+
+class Projectile;
+class Enemy;
 
 class Game : public BaseGame
 {
@@ -23,6 +30,12 @@ public:
 	void ProcessMouseMotionEvent( const SDL_MouseMotionEvent& e ) override;
 	void ProcessMouseDownEvent( const SDL_MouseButtonEvent& e ) override;
 	void ProcessMouseUpEvent( const SDL_MouseButtonEvent& e ) override;
+
+	std::list<Projectile*> g_projectiles;
+	std::list<Enemy*> g_enemies;
+	Player* g_pPlayer{nullptr};
+	Texture* g_pBackground{nullptr};
+	Texture* g_pCrosshair{nullptr};
 
 private:
 	// FUNCTIONS

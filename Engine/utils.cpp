@@ -770,3 +770,8 @@ Point2f utils::AverageBetweenPoints(const std::vector<Point2f>& vertices)
 }
 
 #pragma endregion CollisionFunctionality
+
+float utils::Clamp(float min, float max, float value)
+{
+	return std::min(max, std::max(min, value));
+}

@@ -91,5 +91,7 @@ namespace utils
 	Point2f AverageBetweenPoints(const std::vector<Point2f>& vertices);
 
 #pragma endregion CollisionFunctionality
+	float Clamp(float min, float max, float value);
+
 
 }
