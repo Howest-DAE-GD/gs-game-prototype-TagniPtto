@@ -6,41 +6,58 @@
 
 #include "Player.h"
 
-#include "Projectile.h"
+#include "Level.h"
 
-Player::Player(Vector2f position, Vector2f velocity) :
+#include "Projectile.h"
+#include "Pizza.h"
+
+Player::Player(Vector2f position, Vector2f velocity, Oven* oven) :
 	Entity::Entity(position, velocity),
-	m_pTexture(new Texture("Oven.png")),
 	m_pInputBuffer(5),
 	m_pSfxManager(),
-	m_pAnimationManager_Explosion("CartoonExplosion.png"),
-	m_pAnimationManager_MuzzleFlash("MuzzleFlash.png")
+	g_pOven(oven)
 {
 
-	m_pSfxManager.AddSfx("sfx/OvenDoor.mp3","NormalShot");
+	m_pSfxManager.AddSfx("sfx/OvenDoor.mp3","NormalShot1");
 	m_pSfxManager.AddSfx("sfx/BowRelease.mp3","NormalShot2");
+	m_pSfxManager.AddSfx("sfx/Cannon-shot.mp3","CannonShot");
+	m_pSfxManager.AddSfx("sfx/FlameTrower.mp3","flame");
+	m_pSfxManager.AddSfx("sfx/Orb2.mp3","orb");
+	m_pSfxManager.SetVolume("NormalShot1",MIX_MAX_VOLUME/4);
+	m_pSfxManager.SetVolume("NormalShot2",MIX_MAX_VOLUME/4);
+	m_pSfxManager.SetVolume("CannonShot",MIX_MAX_VOLUME/4);
+	m_pSfxManager.SetVolume("flame",MIX_MAX_VOLUME/8);
+	m_pSfxManager.SetVolume("orb", MIX_MAX_VOLUME/4);
 
-	m_pAnimationManager_Explosion.AddAnimation("main", Point2f{ 0,0 },
-		m_pAnimationManager_Explosion.GetSpriteSheetWidth() / 6.f,
-		m_pAnimationManager_Explosion.GetSpriteSheetHeight(), 6, 0.03f, Animation::AnimationMode::normal);
-	m_pAnimationManager_MuzzleFlash.AddAnimation("main", Point2f{ 0,0 },
-		m_pAnimationManager_MuzzleFlash.GetSpriteSheetWidth() / 4.f,
-		m_pAnimationManager_MuzzleFlash.GetSpriteSheetHeight(), 4, 0.05f, Animation::AnimationMode::normal);
 	
 }
 Player::~Player()
 {
-	delete m_pTexture;
 }
 void Player::Update(float elapsedSec)
 {
 
 	m_pInputBuffer.Update(elapsedSec);
-	HandleKeyBoardInput(elapsedSec);
-	m_pAnimationManager_MuzzleFlash.Update(elapsedSec);
-	m_pAnimationManager_Explosion.Update(elapsedSec);
+	g_pOven->Update(elapsedSec);
 	Entity::Update(elapsedSec);
 
+	if (g_pOven->m_shootingFunctionIndex == 1) {
+		if (g_pLevel->leftMouse) {
+			Shoot();
+		}
+	}
+	
+	if (m_Position.x < 0 or m_Position.x > g_pLevel->m_viewport.width) {
+		m_Velocity = Vector2f{ -m_Velocity.x,m_Velocity.y };
+	}
+	if (m_Position.y < 0 or m_Position.y > g_pLevel->m_viewport.height) {
+		m_Velocity = Vector2f{ m_Velocity.x,-m_Velocity.y };
+	}
+	m_Position = Vector2f{
+		utils::Clamp(0, g_pLevel->m_viewport.width, m_Position.x),
+		utils::Clamp(0, g_pLevel->m_viewport.height, m_Position.y)
+	};
+	HandleKeyBoardInput(elapsedSec);
 	m_Velocity.x = utils::Clamp(-MaxMovementSpeed, MaxMovementSpeed, m_Velocity.x);
 	m_Velocity.y = utils::Clamp(-MaxMovementSpeed, MaxMovementSpeed, m_Velocity.y);
 
@@ -52,22 +69,15 @@ void Player::Draw() const
 	utils::DrawLine(m_Position.ToPoint2f(), (m_Position + m_DirectionVector).ToPoint2f() , 1.0f);
 
 
-	float width{ 50 }, height{ 50 };
-	Rectf dst{ -width / 2.f,-height / 2.f ,width,height };
 
-
+	const float scale{1.2f};
 	glPushMatrix(); {
 
 		glTranslatef(m_Position.x, m_Position.y, 0.f);
 		glRotatef(m_angle ,0.f,0.f,1.f);
-		m_pTexture->Draw(dst);
+		glScalef(scale, scale, 1.0f);
+		g_pOven->Draw();
 
-		float muzzleFlash_size{ 30 };
-		glTranslatef(0, muzzleFlash_size + 10, 0);
-		glRotatef(90 ,0.f,0.f,1.f);
-		if (!m_pAnimationManager_MuzzleFlash.GetCurrentAnimation().m_EofAnimation) {
-			m_pAnimationManager_MuzzleFlash.Draw(Rectf{ -muzzleFlash_size,-muzzleFlash_size,2 * muzzleFlash_size,2 * muzzleFlash_size });
-		}
 	}glPopMatrix();
 
 }
@@ -91,35 +101,58 @@ void Player::HandleKeyBoardInput(float elapsedSec)
 	}
 
 	if (int((m_pInputBuffer)[0]) == int(Input::EMPTY)) {
-		m_Velocity *= 0.99f;
+		
 	}
 
+	const Uint8* keyboard_state_array = SDL_GetKeyboardState(NULL);
+	if (keyboard_state_array[SDL_SCANCODE_1]) {
+		g_pOven->m_shootingFunctionIndex = 0;
+		g_pOven->SetProjectile(0);
+	}
+	if (keyboard_state_array[SDL_SCANCODE_2]) {
+		g_pOven->m_shootingFunctionIndex = 0;
+		g_pOven->SetProjectile(1);
 
+	}
+	if (keyboard_state_array[SDL_SCANCODE_3]) {
+		g_pOven->m_shootingFunctionIndex = 0;
+		g_pOven->SetProjectile(2);
+	}
+	if (keyboard_state_array[SDL_SCANCODE_4]) {
+		g_pOven->m_shootingFunctionIndex = 1;
+		g_pOven->SetProjectile(3);
+	}
+	if (keyboard_state_array[SDL_SCANCODE_5]) {
+		g_pOven->m_shootingFunctionIndex = 0;
+		g_pOven->SetProjectile(4);
+	}
+	if (keyboard_state_array[SDL_SCANCODE_6]) {
+		g_pOven->m_shootingFunctionIndex = 0;
+		g_pOven->SetProjectile(5);
+	}
+	m_Velocity *= 0.99f;
 }
 
-void Player::HandleMouseInput(const Point2f mousePos)
+void Player::HandleMouseInput()
 {
-	directionVector = Vector2f{ m_Position.ToPoint2f() , mousePos };
+	directionVector = Vector2f{ m_Position.ToPoint2f() , Point2f{Level::mouseX,Level::mouseY} };
 	//std::cout << "directionVector: " << directionVector  << std::endl;
 	m_angle = -directionVector.AngleWith(Vector2f{ 1.0f,0.0f }) * 180.f / 3.14f - 90;
 
 }
 
-void Player::Shoot(std::list<Projectile*>& projectiles)
+void Player::Shoot()
 {
-	m_pAnimationManager_MuzzleFlash.SetAnimation("main");
-	m_pSfxManager.Play("NormalShot");
-	float ProjectileSpeed{ 500 };
-	float knockBackPercentage{ 0.2f };
-	Projectile* p{ new Projectile(m_Position, Vector2f{cos((m_angle + 90) * 3.14f / 180.f),sin((m_angle + 90) * 3.14f / 180.f)} *ProjectileSpeed,m_angle + 90,this) };
-	
-	const float maxAngVel{200};
-	const float minAngVel{20};
+	const float knockBackPercentage{ 0.1f };
+	//m_pSfxManager.Play("CannonShot");
 
-	
-	p->SetAngularVelocity(std::rand()%int(maxAngVel- minAngVel) + minAngVel);
-	projectiles.push_back(p);
-	m_Velocity -= Vector2f{ cos((m_angle + 90) * 3.14f / 180.f), sin((m_angle + 90) * 3.14f / 180.f) } *ProjectileSpeed * knockBackPercentage;
+	g_pOven->Shoot(g_pLevel->GetProjectiles(),this);
+	//
+}
+
+const SfxManager& Player::GetSfxManager()
+{
+	return m_pSfxManager;
 }
 
 

@@ -4,7 +4,7 @@
 
 #include "Texture.h"
 
-
+Level* Entity::g_pLevel = nullptr;
 
 Entity::Entity(Vector2f position, Vector2f velocity,float angle, Texture* texture) :
 	m_Position(position), m_Velocity(velocity) , m_pTexture(texture), m_angle(angle)
@@ -40,6 +40,7 @@ void Entity::Draw() const
 void Entity::Update(float elapsedSec)
 {
 	if (!m_isActive)return;
+	m_Velocity += m_Force * elapsedSec;
 	m_Position += m_Velocity * elapsedSec;
 	m_angle += m_angularVelocity * elapsedSec;
 }
@@ -73,6 +74,16 @@ void Entity::SetVelocity(const Vector2f& velocity)
 	m_Velocity = velocity;
 }
 
+Vector2f Entity::GetForce()
+{
+	return m_Force;
+}
+
+void Entity::SetForce(const Vector2f& force)
+{
+	m_Force = force;
+}
+
 float Entity::GetAngularVelocity() const
 {
 	return m_angularVelocity;
@@ -83,10 +94,20 @@ void Entity::SetAngularVelocity(float angVel)
 	m_angularVelocity = angVel;
 }
 
-
-void Entity::Attack(Entity& target, int damage)
+float Entity::GetAngle() const
 {
-	target.m_Health -= 2;
+	return m_angle;
+}
+
+void Entity::SetAngle(float angle)
+{
+	m_angle = angle;
+}
+
+
+void Entity::Attack(Entity& target, float damage)
+{
+	target.m_Health -= damage;
 }
 
 void Entity::KnockBack(Entity& target, float force)
@@ -99,7 +120,7 @@ int Entity::GetHealth()
 	return m_Health;
 }
 
-void Entity::SetHealth(int health)
+void Entity::SetHealth(float health)
 {
 	m_Health = health;
 }

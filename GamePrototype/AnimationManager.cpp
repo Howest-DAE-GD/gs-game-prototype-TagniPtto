@@ -78,11 +78,12 @@ void AnimationManager::AddAnimation(const std::string& name, Point2f loc, float 
 	m_animationDict.insert({name,m_animationDict.size()});
 }
 
-void AnimationManager::Draw(const Rectf& dstRect)const {
+void AnimationManager::Draw(const Rectf& dstRect, int offset) const
+{
 	if (m_currentAnimation >= m_pAnimations.size()) {
 		return;
 	}
-	m_pAnimations[m_currentAnimation]->Draw(dstRect);
+	m_pAnimations[m_currentAnimation]->Draw(dstRect,offset);
 }
 
 void AnimationManager::Update(float elapsedSec)

@@ -11,12 +11,12 @@ Animation::Animation(Point2f position, float width, float height, float frame_du
 {
 }
 
-void Animation::Draw(const Rectf& dstRect) const {
+void Animation::Draw(const Rectf& dstRect , int offset) const {
 	const float verticalSpacing{};
 	const float horizontalSpacing{};
 
 
-	float posX{ m_position.x + m_currentFrameIndex * (m_width + horizontalSpacing) };
+	float posX{ m_position.x + ((m_currentFrameIndex + offset) % m_frameCount) * (m_width + horizontalSpacing) };
 	float posY{ m_position.y + int(posX / m_pAnimationSheet->GetWidth()) * (m_height + verticalSpacing) };
 	Rectf srcRect{
 		 float(int(posX) % int(m_pAnimationSheet->GetWidth()))
@@ -24,6 +24,7 @@ void Animation::Draw(const Rectf& dstRect) const {
 		,m_width,m_height };
 	m_pAnimationSheet->Draw(dstRect, srcRect);
 }
+
 
 void Animation::Reset() {
 	m_currentFrameIndex = 0;

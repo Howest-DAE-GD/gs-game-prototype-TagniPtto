@@ -2,13 +2,14 @@
 #include "BaseGame.h"
 
 #include <list>
-
-class AnimationManager;
+#include <vector>
+class TextureManager;
 class Player;
-class Texture;
-
+class Level;
+class Oven;
+class Pizza;
 class Projectile;
-class Enemy;
+typedef void (*ShootingFunction)(Projectile* prjc, std::list<Projectile*>& projectileList, Player* parent);
 
 class Game : public BaseGame
 {
@@ -31,12 +32,13 @@ public:
 	void ProcessMouseDownEvent( const SDL_MouseButtonEvent& e ) override;
 	void ProcessMouseUpEvent( const SDL_MouseButtonEvent& e ) override;
 
-	std::list<Projectile*> g_projectiles;
-	std::list<Enemy*> g_enemies;
-	Player* g_pPlayer{nullptr};
-	Texture* g_pBackground{nullptr};
-	Texture* g_pCrosshair{nullptr};
+	Oven* g_pOven1{nullptr};
+	Player* g_pPlayer{ nullptr };
+	Level* g_pLevel{nullptr};
+	std::vector<Projectile*>g_ProjectileSamples;
+	std::vector<ShootingFunction>g_shootingFunctionLibrary;
 
+	TextureManager* g_pTextureManager{nullptr};
 private:
 	// FUNCTIONS
 	void Initialize();

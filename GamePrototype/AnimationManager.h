@@ -21,7 +21,7 @@ public:
 	AnimationManager& operator=(AnimationManager&& other) noexcept;
 
 	
-	void Draw(const Rectf& dstRect) const;
+	void Draw(const Rectf& dstRect , int offset = 0) const;
 	void Update(float elapsedSec);
 
 	void AddAnimation(const std::string& name, Point2f loc, float width, float height, int frameCount, float frameDuration, Animation::AnimationMode mode = Animation::AnimationMode::normal);

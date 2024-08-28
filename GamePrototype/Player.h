@@ -7,10 +7,12 @@
 #include "InputBuffer.h"
 #include "AnimationManager.h"
 #include "SfxManager.h"
+#include "Oven.h"
 
 #include <list>
 
 class Projectile;
+class Level;
 
 
 class Player : public Entity
@@ -24,30 +26,32 @@ class Player : public Entity
 public:
 
 
-	Player(Vector2f position = {}, Vector2f velocity = {});
+	Player(Vector2f position = {}, Vector2f velocity = {} , Oven* oven = nullptr);
 	~Player();
 	void Update(float elapsedSec) override;
+	
 	void Draw() const override;
 	void HandleKeyBoardInput(float elapsedSec);
-	void HandleMouseInput(const Point2f mousePos);
+	void HandleMouseInput();
 
-	void Shoot(std::list<Projectile*>& projectiles);
-	void Toggle();
-
+	void Shoot();
+	const SfxManager& GetSfxManager();
 
 	bool isInvincible{false};
 private:
 
-	const float MaxMovementSpeed{ 500 };
-	const float acceleration{ 0.3f };
+	const float MaxMovementSpeed{450 };
+	const float acceleration{ 0.9f };
 	float m_elapsedSec{};
 
 	Vector2f directionVector;
-	AnimationManager m_pAnimationManager_MuzzleFlash;
-	AnimationManager m_pAnimationManager_Explosion;
 	SfxManager m_pSfxManager;
-
 	InputBuffer m_pInputBuffer;
-	Texture* m_pTexture;
+
+	bool m_isShielded{false};
+
+public:
+	Oven* g_pOven;
+
 };
 

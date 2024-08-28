@@ -24,7 +24,7 @@ public:
 	Animation& operator=(Animation&& other)noexcept = default;
 
 	void Update(float elapsedSec);
-	void Draw(const Rectf& dstRect)const;
+	void Draw(const Rectf& dstRect , int offset = 0)const;
 	void Reset();
 	AnimationMode GetAnimationMode()const;
 

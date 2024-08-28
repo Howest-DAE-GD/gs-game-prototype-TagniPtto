@@ -62,6 +62,7 @@ void TextureManager::DrawTexture(int i, const Rectf& dstRect, const Rectf& srcRe
 
 Texture* TextureManager::GetTexture(const std::string& name) const
 {
+	if (m_pTextures.size() < 1)return nullptr;
 	if (m_dictionary.find(name) == m_dictionary.end()) {
 		return nullptr;
 	}

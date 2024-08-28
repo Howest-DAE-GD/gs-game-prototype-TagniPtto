@@ -22,19 +22,19 @@ void InputBuffer::Update(float elapsedSec)
 	bool gettingInputThisF{ false };
 	int x{ 0 };
 	int y{ 0 };
-	if (keyboard_state_array[SDL_SCANCODE_UP]) {
+	if (keyboard_state_array[SDL_SCANCODE_UP] or keyboard_state_array[SDL_SCANCODE_W]) {
 		y = (int)Input::ARROW_UP;
 		gettingInputThisF = true;
 	}
-	if (keyboard_state_array[SDL_SCANCODE_LEFT]) {
+	if (keyboard_state_array[SDL_SCANCODE_LEFT] or keyboard_state_array[SDL_SCANCODE_A]) {
 		x = (int)Input::ARROW_LEFT;
 		gettingInputThisF = true;
 	}
-	if (keyboard_state_array[SDL_SCANCODE_DOWN]) {
+	if (keyboard_state_array[SDL_SCANCODE_DOWN] or keyboard_state_array[SDL_SCANCODE_S]) {
 		y = (int)Input::ARROW_DOWN;
 		gettingInputThisF = true;
 	}
-	if (keyboard_state_array[SDL_SCANCODE_RIGHT]) {
+	if (keyboard_state_array[SDL_SCANCODE_RIGHT] or keyboard_state_array[SDL_SCANCODE_D]) {
 		x = (int)Input::ARROW_RIGHT;
 		gettingInputThisF = true;
 	}
